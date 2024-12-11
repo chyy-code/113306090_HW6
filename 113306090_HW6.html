@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>113306090_HW6_1A2B</title>
+    <style>
+        #history {
+            border: 1px solid lightgray;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px; 
+    </style>
+</head>
+<body>
+	<h1>113306090_HW6_1A2B</h1>
+	<input type="text" id="guessInput" placeholder="請輸入4個不重複的數字">
+	<button onclick="checkGuess()">猜!</button>
+	<div id="history">
+		<h3>遊戲紀錄: </h3>
+	</div>
+
+	<script>
+		let answer=generateAnswer();
+		let attempts=0;
+
+		function generateAnswer(){
+			const digits = Array.from({ length: 10 }, (_, i) => i.toString());
+			return Array(4).fill(0).map(() => digits.splice(Math.random() * digits.length, 1)).join('');
+		}
+
+        function checkGuess() {
+            const input = document.getElementById("guessInput").value;
+            if (!isValidInput(input)) {
+                alert("請輸入4個不重複的數字！");
+                return;
+            }
+
+            attempts++;
+            const result = calculateResult(input, answer);
+            updateHistory(input, result);
+
+            if (result === "4A0B") {
+                alert(`恭喜答對！答案是 ${answer}，總共作答了 ${attempts} 次。`);
+                resetGame();
+            } else {
+                document.getElementById("guessInput").value = "";
+            }
+        }
+
+        function isValidInput(input) {
+            if (input.length !== 4) return false;
+            const digits = input.split('');
+            if (new Set(digits).size !== 4) return false;
+            return digits.every(d => !isNaN(d) && d >= '0' && d <= '9');
+        }
+
+        function calculateResult(guess, answer) {
+            let a = 0, b = 0;
+            const guessArray = guess.split('');
+            const answerArray = answer.split('');
+            guessArray.forEach((digit, index) => {
+                if (digit === answerArray[index]) {
+                    a++;
+                } else if (answerArray.includes(digit)) {
+                    b++;
+                }
+            });
+            return `${a}A${b}B`;
+        }
+
+        function updateHistory(guess, result) {
+            const historyDiv = document.getElementById("history");
+            const record = document.createElement("p");
+            record.textContent = `第 ${attempts} 次：${guess} - ${result}`;
+            historyDiv.appendChild(record);
+        }
+
+        function resetGame() {
+            answer = generateAnswer();
+            attempts = 0;
+            document.getElementById("history").innerHTML = "<h3>遊戲紀錄：</h3>";
+            document.getElementById("guessInput").value = "";
+        }
+	</script>
+</body>
+</html>
